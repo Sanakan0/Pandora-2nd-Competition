@@ -20,7 +20,7 @@ def create_app():
         """
         以此项目中的404.html作为此Web Server工作时的404错误页
         """
-        return render_template('404.html')
+        return render_template('404.html'),404
 
     # TODO: 完成接受 HTTP_URL 的 picture_reshape
     # TODO: 完成接受相对路径的 picture_reshape
@@ -71,10 +71,12 @@ def create_app():
             bimg = io.BytesIO(bdata)
             img = Image.open(bimg)
             res = img.resize((100,100),Image.ANTIALIAS)
+            tmp = io.BytesIO()
+            res.save(tmp,'PNG')
             jdata=dict()
-            jdata['base64_picture']= base64.b64encode(res.tobytes()).hex()
+            jdata['base64_picture']= base64.b64encode(tmp.getvalue()).decode()
             x = hashlib.md5()
-            x.update(res.tobytes().hex().encode())
+            x.update(tmp.getvalue())
             jdata['md5'] = x.hexdigest()
             return jsonify(jdata)
 
